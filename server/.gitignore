@@ -55,6 +55,7 @@ $RECYCLE.BIN/
 # VSCode
 .vscode/
 !.vscode/extensions.json
+*.vs
 
 # JetBrains
 .idea/
