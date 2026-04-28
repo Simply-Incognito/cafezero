@@ -58,15 +58,27 @@ const userSchema = mongoose.Schema({
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetTokenExpires: Date,
+    gender: {
+        type: String,
+        enum: ["Male", "Female"]
+    },
+    dateOfBirth: Date
 });
 
 // HASH PASSWORD
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+userSchema.pre('save', async function () {
+    if (!this.isModified('password')) return;
 
     this.password = await bcrypt.hash(this.password, 10);
     this.confirmPassword = undefined;
 });
+
+// QUERY MIDDLEWARE - Filter out inactive users
+userSchema.pre(/^find/, function () {
+    this.find({ active: { $ne: false } });
+
+});
+
 
 // Validate user password
 userSchema.methods.ValidateUserPassword = async function (password, hash) {

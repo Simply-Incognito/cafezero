@@ -58,7 +58,7 @@ exports.updatePassword = asyncErrorHandler(async (req, res, next) => {
     // Generate Token
     const token = createToken(user._id);
 
-    user.save({ validateBeforeSave: true });
+    await user.save({ validateBeforeSave: true });
 
     res.status(200).json({
         status: "success",
@@ -81,7 +81,7 @@ exports.verifyEmail = asyncErrorHandler(async (req, res, next) => {
 // Delete Account
 exports.deleteAccount = asyncErrorHandler(async (req, res, next) => {
     // Fetch user and soft delete
-    const user = await User.findOneAndUpdate({ _id: req.user._id }, { active: false }, { new: true, runValidators: true });
+    const user = await User.findOneAndUpdate({ _id: req.user._id }, { active: false }, { returnDocument: 'after', runValidators: true });
 
     //console.log(user);
 
@@ -90,13 +90,13 @@ exports.deleteAccount = asyncErrorHandler(async (req, res, next) => {
 });
 
 // Update Profile details
-// Allowed Fields: fname, lname, email 
+// Allowed Fields: fname, lname, photo, gender, dateOfBirth 
 exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
-    const allowedFields = ["firstname", "lastname", "photo"];
+    const allowedFields = ["firstname", "lastname", "photo", "gender", "dateOfBirth"];
 
     const filteredRequestObj = filterRequestObj(req.body, allowedFields);
 
-    const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredRequestObj, { new: true, runValidators: true });
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredRequestObj, { returnDocument: 'after', runValidators: true });
 
     res.status(200).json({
         status: "success",

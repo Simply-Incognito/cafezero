@@ -13,7 +13,7 @@ const app = express();
 app.use(cors({
     origin: "http://localhost:3000", // Replace with your frontend URL
     credentials: true, // Allow cookies to be sent
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
@@ -44,11 +44,13 @@ require(`${__dirname}/Utils/passport`);
 const authRouter = require(`${__dirname}/Routers/authRoute`);
 const userRouter = require(`${__dirname}/Routers/userRoute`);
 const orderRouter = require(`${__dirname}/Routers/orderRoute`);
+const foodRouter = require(`${__dirname}/Routers/foodRoute`);
 
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/order', orderRouter);
+app.use('/api/v1/food', foodRouter);
 
 // Default routes
 app.use((req, res, next) => {

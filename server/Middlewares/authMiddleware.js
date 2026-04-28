@@ -12,11 +12,12 @@ module.exports = asyncErrorHandler(async (req, res, next) => {
     // Check if token exist
 
     var testToken = req.headers.authorization;
-
     var token;
 
-    if (testToken && testToken.startsWith("bearer")) {
+    if (testToken && testToken.startsWith("Bearer")) {
         token = testToken.split(' ')[1];
+    } else if (req.cookies && req.cookies.token) {
+        token = req.cookies.token;
     }
 
     //console.log(token);
@@ -48,6 +49,13 @@ module.exports = asyncErrorHandler(async (req, res, next) => {
 
     if (isPasswordModified) {
         const error = new CustomError("Password changed recently. Please login again!", 401);
+        return next(error);
+    }
+
+    // Check if user is inactive
+
+    if (!user.active) {
+        const error = new CustomError("Your account is disabled! Please contact the administrator.", 403);
         return next(error);
     }
 

@@ -41,25 +41,21 @@ exports.createUser = asyncErrorHandler(async (req, res, next) => {
 exports.googleCallbackFunc = asyncErrorHandler(async (req, res, next) => {
     // After successful Google authentication, req.user contains the database user
     if (!req.user) {
-        return next(new CustomError("Authentication failed", 401));
+        return res.redirect('http://localhost:3000/auth?error=authentication_failed');
     }
 
     // Generate JWT token for the user
     const token = createToken(req.user._id);
 
-    // Optional: Set session cookie (already handled by express-session + Passport)
-    res.status(200).json({
-        status: "success",
-        message: "Google login successful",
-        user: {
-            id: req.user._id,
-            email: req.user.email,
-            firstname: req.user.firstname,
-            lastname: req.user.lastname,
-            photo: req.user.photo
-        },
-        token
+    // Set JWT as cookie so the frontend can stay logged in
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: false, // Set to true in production
+        maxAge: 1000 * 60 * 60 * 24
     });
+
+    // Redirect back to the frontend auth page with a success message flag
+    res.redirect('http://localhost:3000/auth?login=success');
 });
 
 
@@ -83,6 +79,11 @@ exports.login = asyncErrorHandler(async (req, res, next) => {
 
     if (!isValidPassword) {
         return next(new CustomError("Incorrect password. Please try again.", 404));
+    }
+
+    // Check if user account is active
+    if (!user.active) {
+        return next(new CustomError("Your account is disabled! Please contact the administrator.", 403));
     }
 
 

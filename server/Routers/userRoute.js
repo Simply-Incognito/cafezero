@@ -8,13 +8,12 @@ const authMiddleware = require(`${__dirname}/../Middlewares/authMiddleware`);
 
 const router = express.Router();
 
-router.route('/update-password').patch(authMiddleware, userController.updatePassword);
-
-router.route('/update-profile').patch(authMiddleware, userController.updateProfile);
-
-router.route('/delete-account').delete(authMiddleware, userController.deleteAccount);
-
 router.route('/profile').get(authMiddleware, userController.getProfile);
 
+router.route('/profile/update').patch(authMiddleware, userController.updateProfile);
+
+router.route('/update-password').patch(authMiddleware, userController.updatePassword);      
+
+router.route('/profile/delete').delete(authMiddleware, userController.deleteAccount);
 
 module.exports = router;

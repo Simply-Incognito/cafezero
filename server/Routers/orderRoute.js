@@ -9,6 +9,6 @@ const orderController = require(`${__dirname}/../Controllers/orderController`);
 
 const router = express.Router();
 
-router.route("/").post(authMiddleware, orderController.createOrder);
+router.route("/orders").post(authMiddleware, orderController.createOrder);
 
 module.exports = router;
